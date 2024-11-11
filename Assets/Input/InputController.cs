@@ -22,9 +22,137 @@ public partial class @InputController: IInputActionCollection2, IDisposable
     {
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""InputController"",
-    ""maps"": [],
+    ""maps"": [
+        {
+            ""name"": ""Gameplay"",
+            ""id"": ""fcdb3afd-29c8-4d14-a696-325b185e3c45"",
+            ""actions"": [
+                {
+                    ""name"": ""Axis"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1cefd910-a8e2-4327-83fe-1dbf5bcdd5d7"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""4e8c19c0-d705-4c79-b113-87e8126a9eba"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Axis"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""759973cc-0de8-4980-93e8-1cc570d1d722"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Axis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""03b970dc-f7e1-4a88-8b87-ee8cb7d3b0c0"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Axis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""b8399c01-febd-4811-a544-d6ba597cf92e"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Axis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""fa7ea08a-e67d-4308-a4a9-39fe69375682"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Axis"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
+        },
+        {
+            ""name"": ""Keys"",
+            ""id"": ""cf425175-2af0-4818-808c-48ec936fd526"",
+            ""actions"": [
+                {
+                    ""name"": ""Press Q"",
+                    ""type"": ""Button"",
+                    ""id"": ""3224cb6a-0216-43f2-920d-38461cbdf721"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Press E"",
+                    ""type"": ""Button"",
+                    ""id"": ""36c85631-982a-4ce7-9a4a-8aeb159df155"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""d9287c76-2ffb-4b50-af1d-2289af63b9e5"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Press Q"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""49fd6646-ef8f-4a34-9f8d-8a414a6d4330"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Press E"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        }
+    ],
     ""controlSchemes"": []
 }");
+        // Gameplay
+        m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
+        m_Gameplay_Axis = m_Gameplay.FindAction("Axis", throwIfNotFound: true);
+        // Keys
+        m_Keys = asset.FindActionMap("Keys", throwIfNotFound: true);
+        m_Keys_PressQ = m_Keys.FindAction("Press Q", throwIfNotFound: true);
+        m_Keys_PressE = m_Keys.FindAction("Press E", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -81,5 +209,114 @@ public partial class @InputController: IInputActionCollection2, IDisposable
     public int FindBinding(InputBinding bindingMask, out InputAction action)
     {
         return asset.FindBinding(bindingMask, out action);
+    }
+
+    // Gameplay
+    private readonly InputActionMap m_Gameplay;
+    private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
+    private readonly InputAction m_Gameplay_Axis;
+    public struct GameplayActions
+    {
+        private @InputController m_Wrapper;
+        public GameplayActions(@InputController wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Axis => m_Wrapper.m_Gameplay_Axis;
+        public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameplayActions set) { return set.Get(); }
+        public void AddCallbacks(IGameplayActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GameplayActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GameplayActionsCallbackInterfaces.Add(instance);
+            @Axis.started += instance.OnAxis;
+            @Axis.performed += instance.OnAxis;
+            @Axis.canceled += instance.OnAxis;
+        }
+
+        private void UnregisterCallbacks(IGameplayActions instance)
+        {
+            @Axis.started -= instance.OnAxis;
+            @Axis.performed -= instance.OnAxis;
+            @Axis.canceled -= instance.OnAxis;
+        }
+
+        public void RemoveCallbacks(IGameplayActions instance)
+        {
+            if (m_Wrapper.m_GameplayActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IGameplayActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GameplayActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GameplayActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public GameplayActions @Gameplay => new GameplayActions(this);
+
+    // Keys
+    private readonly InputActionMap m_Keys;
+    private List<IKeysActions> m_KeysActionsCallbackInterfaces = new List<IKeysActions>();
+    private readonly InputAction m_Keys_PressQ;
+    private readonly InputAction m_Keys_PressE;
+    public struct KeysActions
+    {
+        private @InputController m_Wrapper;
+        public KeysActions(@InputController wrapper) { m_Wrapper = wrapper; }
+        public InputAction @PressQ => m_Wrapper.m_Keys_PressQ;
+        public InputAction @PressE => m_Wrapper.m_Keys_PressE;
+        public InputActionMap Get() { return m_Wrapper.m_Keys; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(KeysActions set) { return set.Get(); }
+        public void AddCallbacks(IKeysActions instance)
+        {
+            if (instance == null || m_Wrapper.m_KeysActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_KeysActionsCallbackInterfaces.Add(instance);
+            @PressQ.started += instance.OnPressQ;
+            @PressQ.performed += instance.OnPressQ;
+            @PressQ.canceled += instance.OnPressQ;
+            @PressE.started += instance.OnPressE;
+            @PressE.performed += instance.OnPressE;
+            @PressE.canceled += instance.OnPressE;
+        }
+
+        private void UnregisterCallbacks(IKeysActions instance)
+        {
+            @PressQ.started -= instance.OnPressQ;
+            @PressQ.performed -= instance.OnPressQ;
+            @PressQ.canceled -= instance.OnPressQ;
+            @PressE.started -= instance.OnPressE;
+            @PressE.performed -= instance.OnPressE;
+            @PressE.canceled -= instance.OnPressE;
+        }
+
+        public void RemoveCallbacks(IKeysActions instance)
+        {
+            if (m_Wrapper.m_KeysActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IKeysActions instance)
+        {
+            foreach (var item in m_Wrapper.m_KeysActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_KeysActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public KeysActions @Keys => new KeysActions(this);
+    public interface IGameplayActions
+    {
+        void OnAxis(InputAction.CallbackContext context);
+    }
+    public interface IKeysActions
+    {
+        void OnPressQ(InputAction.CallbackContext context);
+        void OnPressE(InputAction.CallbackContext context);
     }
 }

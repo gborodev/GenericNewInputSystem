@@ -1,5 +1,5 @@
 ## Unity ##
-*.cs diff=csharp text
+*.cs diff=csharp -text
 *.cginc text
 *.shader text
 *.mat merge=unityyamlmerge eol=lf
@@ -12,6 +12,7 @@
 *.meta merge=unityyamlmerge eol=lf
 *.controller merge=unityyamlmerge eol=lf
 *.vsconfig merge=unityyamlmerge eol=lf
+*.inputactions merge=unityyamlmerge eol=lf
 ## git-lfs ##
 *.json merge=unityyamlmerge eol=lf
 #Image
